@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/jhampac/sysgo/pwd"
+	"github.com/jhampac/sysgo/which"
 )
 
 func main() {
-	pwd.Execute()
+	which.Execute()
 }
