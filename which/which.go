@@ -24,10 +24,11 @@ func Execute() {
 
 	path := os.Getenv("PATH")
 	pathSlice := strings.Split(path, ":")
+
 	for _, dir := range pathSlice {
 		fullPath := dir + "/" + file
-
 		fileInfo, err := os.Stat(fullPath)
+
 		if err == nil {
 			mode := fileInfo.Mode()
 			if mode.IsRegular() {
