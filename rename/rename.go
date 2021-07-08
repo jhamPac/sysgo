@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 )
 
 func main() {
@@ -31,4 +32,28 @@ func main() {
 		}
 	}
 
+	newDestination := destination
+	destInfo, err := os.Stat(destination)
+	if err == nil {
+		mode := destInfo.Mode()
+		if mode.IsDir() {
+			name := filepath.Base(source)
+			newDestination = destination + "/" + name
+		}
+	}
+
+	destination = newDestination
+	_, err = os.Stat(destination)
+	if err == nil {
+		if *oFlag == false {
+			fmt.Println("Destination file already exists.")
+			os.Exit(1)
+		}
+	}
+
+	err = os.Rename(source, destination)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
