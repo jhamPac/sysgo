@@ -5,7 +5,18 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 )
+
+func foundRegex(path string, regExp string) bool {
+	if regExp == "" {
+		return true
+	}
+
+	r, _ := regexp.Compile(regExp)
+	matched := r.MatchString(path)
+	return matched
+}
 
 func main() {
 	sFlag := flag.Bool("s", false, "Sockets")
@@ -13,6 +24,7 @@ func main() {
 	lkFlag := flag.Bool("lk", false, "Symbolic Links")
 	dFlag := flag.Bool("d", false, "Directories")
 	fFlag := flag.Bool("f", false, "Files")
+	rxFlag := flag.String("rx", "", "Regular Expression")
 
 	flag.Parse()
 	flags := flag.Args()
@@ -38,6 +50,10 @@ func main() {
 		fileInfo, err := os.Stat(path)
 		if err != nil {
 			return err
+		}
+
+		if !foundRegex(path, *rxFlag) {
+			return nil
 		}
 
 		if printAll {
