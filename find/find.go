@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 )
 
 func main() {
@@ -33,4 +34,57 @@ func main() {
 
 	path := flags[0]
 
+	walkFn := func(path string, info os.FileInfo, e error) error {
+		fileInfo, err := os.Stat(path)
+		if err != nil {
+			return err
+		}
+
+		if printAll {
+			fmt.Println(path)
+			return nil
+		}
+
+		mode := fileInfo.Mode()
+		if mode.IsRegular() && *fFlag {
+			fmt.Println(path)
+			return nil
+		}
+
+		if mode.IsDir() && *dFlag {
+			fmt.Println(path)
+			return nil
+		}
+
+		fileInfo, _ = os.Lstat(path)
+
+		if fileInfo.Mode()&os.ModeSymlink != 0 {
+			if *lkFlag {
+				fmt.Println(path)
+				return nil
+			}
+		}
+
+		if fileInfo.Mode()&os.ModeNamedPipe != 0 {
+			if *pFlag {
+				fmt.Println(path)
+				return nil
+			}
+		}
+
+		if fileInfo.Mode()&os.ModeSocket != 0 {
+			if *sFlag {
+				fmt.Println(path)
+				return nil
+			}
+		}
+
+		return nil
+	}
+
+	err := filepath.Walk(path, walkFn)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
