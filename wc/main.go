@@ -50,6 +50,7 @@ func main() {
 
 	flag.Parse()
 	args := flag.Args()
+	lengthOfArgs := len(args)
 
 	if len(args) == 0 {
 		fmt.Print("usage: wc <file> [<file2> [... <fileN]\n")
@@ -89,5 +90,28 @@ func main() {
 		}
 
 		fmt.Printf("\t%s\n", filename)
+	}
+
+	if (lengthOfArgs != 1) && printAll {
+		fmt.Printf("%d", totalLines)
+		fmt.Printf("%d", totalWords)
+		fmt.Printf("%d", totalChars)
+		fmt.Println("\ttotal")
+	}
+
+	if (lengthOfArgs != 1) && *lFlag {
+		fmt.Printf("%d", totalLines)
+	}
+
+	if (lengthOfArgs != 1) && *wFlag {
+		fmt.Printf("\t%d", totalWords)
+	}
+
+	if (lengthOfArgs != 1) && *cFlag {
+		fmt.Printf("\t%d", totalChars)
+	}
+
+	if (lengthOfArgs) != 1 {
+		fmt.Printf("\ttotal")
 	}
 }
