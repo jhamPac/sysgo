@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
+	"strconv"
 )
 
 var BUFFERSIZE int64
@@ -24,6 +26,7 @@ func Copy(src string, dst string, size int64) error {
 	}
 	defer source.Close()
 
+	// make sure destination does not exist already
 	_, err = os.Stat(dst)
 	if err == nil {
 		return fmt.Errorf("file %s already exists", dst)
@@ -49,4 +52,21 @@ func Copy(src string, dst string, size int64) error {
 		}
 	}
 	return err
+}
+
+func main() {
+	if len(os.Args) != 4 {
+		fmt.Printf("usage: %s source destination BUFFERSIZE\n", filepath.Base(os.Args[0]))
+		os.Exit(1)
+	}
+
+	source := os.Args[1]
+	destination := os.Args[2]
+	BUFFERSIZE, _ := strconv.ParseInt(os.Args[3], 10, 64)
+
+	fmt.Printf("Copying %s to %s\n", source, destination)
+	err := Copy(source, destination, BUFFERSIZE)
+	if err != nil {
+		fmt.Printf("file copying failed: %q\n", err)
+	}
 }
