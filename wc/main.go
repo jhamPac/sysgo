@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -40,4 +41,53 @@ func count(filename string) (numberOfLines int, numberOfWords int, numberOfChara
 		numberOfCharacters += len(line)
 	}
 	return numberOfLines, numberOfWords, numberOfCharacters
+}
+
+func main() {
+	cFlag := flag.Bool("c", false, "Characters")
+	wFlag := flag.Bool("w", false, "Words")
+	lFlag := flag.Bool("l", false, "Lines")
+
+	flag.Parse()
+	args := flag.Args()
+
+	if len(args) == 0 {
+		fmt.Print("usage: wc <file> [<file2> [... <fileN]\n")
+		os.Exit(1)
+	}
+
+	totalLines := 0
+	totalWords := 0
+	totalChars := 0
+	printAll := false
+
+	for _, filename := range flag.Args() {
+		nLines, nWords, nChars := count(filename)
+
+		totalLines = totalLines + nLines
+		totalWords = totalWords + nWords
+		totalChars = totalChars + nChars
+
+		if (*cFlag && *wFlag && *lFlag) || !(*cFlag || *wFlag || *lFlag) {
+			fmt.Printf("%d", nLines)
+			fmt.Printf("\t%d", nWords)
+			fmt.Printf("\t%d", nChars)
+			printAll = true
+			continue
+		}
+
+		if *lFlag {
+			fmt.Printf("%d", nLines)
+		}
+
+		if *wFlag {
+			fmt.Printf("%d", nWords)
+		}
+
+		if *cFlag {
+			fmt.Printf("%d", nChars)
+		}
+
+		fmt.Printf("\t%s\n", filename)
+	}
 }
